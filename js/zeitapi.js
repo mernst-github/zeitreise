@@ -9,6 +9,18 @@ function AuthorActivity(id, name, publications) {
   this.publications = publications;
 }
 
+AuthorActivity.prototype.startYear = function() {
+  return this.publications[0].releaseDate.getFullYear();
+};
+
+AuthorActivity.prototype.endYear = function() {
+  return this.publications[this.publications.length - 1].releaseDate.getFullYear();
+};
+
+AuthorActivity.prototype.spanYears = function() {
+  return this.endYear() - this.startYear() + 1;
+};
+
 angular.module('zeitapi', ['ng']).config(['$httpProvider', function (http) {
   delete http.defaults.headers.common['X-Requested-With'];
 }]).factory('Author', function ($http) {

@@ -8,7 +8,7 @@
 <div ng-controller=Controller>
   <div style="font-weight: bold">{{client.name}} ({{client.email}}): Noch {{client.quota - client.requests}} requests.</div>
   <div>
-      {{author | json }}
+      {{author.startYear()}} - {{author.endYear()}} is {{author.spanYears()}} years.
   </div>
 </div>
 
@@ -25,6 +25,7 @@
             $scope.client = client;
         });
         Author.get({id: 'Helmut-Schmidt'}, function(author) {
+            console.log(author);
             $scope.author = author;
         })
     }
