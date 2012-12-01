@@ -165,6 +165,12 @@
 <script type="text/javascript">
     var start = 1950;
     var end = 2020;
+
+    function calculateWidth(author) {
+        author.start = (author.startYear() - start) / (end - start) * 100;
+        author.width = author.spanYears() / (end - start) * 100;
+    }
+
     function TimelineController($scope, Author) {
         $scope.authors = [];
         $scope.years = [];
@@ -173,24 +179,14 @@
             $scope.years.push(i);
         }
 
-        Author.get({id: 'Helmut-Schmidt'}, function(author) {
-            $scope.authors.push(author);
-        });
-
-        Author.get({id: 'Giovanni-di-Lorenzo'}, function(author) {
-            $scope.authors.push(author);
-        });
-
-        Author.get({id: 'Iris-Mainka'}, function(author) {
-            $scope.authors.push(author);
-        });
-
-        $scope.$watch('authors', function() {
-            $scope.authors.forEach(function(author){
-                author.start = (author.startYear() - start) / (end - start) * 100;
-                author.width = author.spanYears() / (end - start) * 100;
+        Author.get({}, function(authors) {
+            authors.forEach(function(a) {
+                Author.get(a, function(author) {
+                    calculateWidth(author);
+                    $scope.authors.push(author);
+                });
             });
-        }, true);
+        });
     }
 </script>
 </html>
