@@ -32,7 +32,7 @@ angular.module('zeitapi', ['ng']).config(['$httpProvider', function (http) {
         var rootUri = 'http://api.zeit.de/author';
         return {
             query: function (params, cb) {
-                $http.get(rootUri + '?limit=1000', {
+                $http.get(rootUri + '?limit='+params.limit, {
                     headers:{'X-Authorization':'602c992cc45dd61c013925c253777e31447df5b2ea6e83152283'}
                 }).success(function (response) {
                         cb(response.matches.map(function(json) {
@@ -68,4 +68,13 @@ angular.module('zeitapi', ['ng']).config(['$httpProvider', function (http) {
                 }).success(cb);
             }
         };
+    }).filter('timespan', function() {
+        return function(author) {
+            if(author.spanYears() === 1) {
+                return author.startYear();
+            } else {
+                return author.startYear() + " - " + author.endYear();
+            }
+            return out;
+        }
     });
