@@ -6,17 +6,27 @@
 </head>
 <body>
 <div ng-controller=Controller>
-
+  <div style="font-weight: bold">{{client.name}} ({{client.email}}): Noch {{client.quota - client.requests}} requests.</div>
+  <div>
+      {{author | json }}
+  </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.js"></script>
 <script src="../js/zeitapi.js"></script>
 <script type="text/javascript">
-    function Controller($scope, Author) {
-        Author.get({id: 'Helmut-Schmidt'}, function(author) {
-           console.log(author);
+    function Controller($scope, Client, Author) {
+        $scope.client = {
+            requests: 0,
+            quota: 0
+        };
+        Client.get({}, function(client) {
+            $scope.client = client;
         });
+        Author.get({id: 'Helmut-Schmidt'}, function(author) {
+            $scope.author = author;
+        })
     }
 </script>
 </body>
