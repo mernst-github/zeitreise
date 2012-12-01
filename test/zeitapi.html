@@ -8,8 +8,11 @@
 <div ng-controller=Controller>
   <div style="font-weight: bold">{{client.name}} ({{client.email}}): Noch {{client.quota - client.requests}} requests.</div>
   <div>
-      {{author.startYear()}} - {{author.endYear()}} is {{author.spanYears()}} years.
+      {{author.name}}: {{author.startYear()}} - {{author.endYear()}} is {{author.spanYears()}} years.
   </div>
+    <div>
+        {{authors}}
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.js"></script>
@@ -24,10 +27,13 @@
         Client.get({}, function(client) {
             $scope.client = client;
         });
-        Author.get({id: 'Helmut-Schmidt'}, function(author) {
-            console.log(author);
-            $scope.author = author;
-        })
+        Author.query({}, function(authors) {
+            $scope.authors = authors;
+            Author.get(authors[0], function(activity) {
+                console.log(activity);
+                $scope.author = activity;
+            });
+        });
     }
 </script>
 </body>

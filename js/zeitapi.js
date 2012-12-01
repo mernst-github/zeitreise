@@ -1,3 +1,8 @@
+function Author(id, name) {
+  this.id = id;
+  this.name = name;
+}
+
 function Publication(releaseDate, id) {
   this.releaseDate = releaseDate;
   this.id = id;
@@ -24,10 +29,19 @@ AuthorActivity.prototype.spanYears = function() {
 angular.module('zeitapi', ['ng']).config(['$httpProvider', function (http) {
   delete http.defaults.headers.common['X-Requested-With'];
 }]).factory('Author', function ($http) {
-          var rootUri = 'http://api.zeit.de/author/';
+          var rootUri = 'http://api.zeit.de/author';
           return {
+            query: function (params, cb) {
+              $http.get(rootUri + '?limit=1000', {
+                headers:{'X-Authorization':'602c992cc45dd61c013925c253777e31447df5b2ea6e83152283'}
+              }).success(function (response) {
+                        cb(response.matches.map(function(json) {
+                          return new Author(json.uri.substring(rootUri.length + 1), json.value);
+                        }));
+                      });
+            },
             get:function (params, cb) {
-              $http.get(rootUri + params.id + '?fields=uuid,release_date&limit=1000', {
+              $http.get(rootUri + "/" + params.id + '?fields=uuid,release_date&limit=1000', {
                 headers:{'X-Authorization':'602c992cc45dd61c013925c253777e31447df5b2ea6e83152283'}
               }).success(function (response) {
                         var publications = response.matches.map(function(json) {
@@ -40,14 +54,12 @@ angular.module('zeitapi', ['ng']).config(['$httpProvider', function (http) {
                           return left.releaseDate.getTime() - right.releaseDate.getTime();
                         });
                         cb(new AuthorActivity(
-                                response.uri.substring(rootUri.length),
+                                response.uri.substring(rootUri.length + 1),
                                 response.value,
                                 publications));
                       });
             }
           };
-
-          return Author;
         }).factory('Client', function ($http) {
           return {
             get:function (params, cb) {
