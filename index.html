@@ -179,7 +179,7 @@
             $scope.years.push(i);
         }
 
-        Author.get({}, function(authors) {
+        Author.query({}, function(authors) {
             authors.forEach(function(a) {
                 Author.get(a, function(author) {
                     calculateWidth(author);
