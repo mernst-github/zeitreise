@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="de">
+<html lang="de" ng-app="zeitapi">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -54,6 +54,11 @@
             margin: 20px 0;
         }
 
+        .timeline {
+            overflow-x: scroll;
+            width: 100%;
+        }
+
         ul.authors {
             list-style-type: none;
             margin: 0;
@@ -96,7 +101,6 @@
         ul.intervals {
             list-style-type: none;
             padding: 0;
-            display: block;
         }
 
             /* The width depends on the number of intervals. For example 100 / 7 = 14.29% -- then subtract a little bit for room for the borders */
@@ -109,7 +113,7 @@
             margin: 0;
             padding: 15px 0;
             text-align: center;
-            width: 14.17%;
+            width: 12.3%;
         }
 
         ul.intervals li.first {
@@ -119,40 +123,29 @@
 </head>
 <body>
 <div id="wrap">
-    <div class="container">
+    <div class="container" ng-controller="TimelineController">
         <div class="page-header">
             <h1>ZEIT Autoren Timeline</h1>
         </div>
         <div class="row-fluid">
             <div class="span2">
                 <h2>Autoren</h2>
-                <ul class="authors">
-                    <li>Günther Grass</li>
+                <ul class="authors" >
+                    <li ng-repeat="author in authors">{{author.name}}</li>
                 </ul>
             </div>
             <div class="span10">
                 <h2>Timeline</h2>
 
                 <div class="timeline">
-                    <ul class="events">
-                        <li style="width: 42.48%; left: 57.2%;">Design &amp; Typography <em>(2007 - 2009)</em></li>
-                        <li style="width: 56.68%; left: 43%;">Photography <em>(2006 - 2009)</em></li>
-                        <li style="width: 71.3%; left: 28.4%;">Object Oriented Programming <em>(2005 - 2009)</em></li>
-                        <li style="width: 85.5%; left: 14.2%;">Web Development <em>(2004 - 2009)</em></li>
-                        <li style="width: 42.75%; left: 0;">3D Modeling and Rendering <em>(2003 - 2006)</em></li>
-                        <li style="width: 99.5%; left: 0;">Drawing &amp; Illustration <em>(2003 - 2009)</em></li>
+                    <ul class="events" >
+                        <li ng-repeat="author in authors" style="width: {{author.width}}%; left: {{author.start}}%;" ng-repeat="author in authors"><em>{{author.startYear()}} - {{author.endYear()}}</em></li>
                     </ul>
                     <!-- end .events -->
-
                     <ul class="intervals">
-                        <li class="first">2003</li>
-                        <li>2004</li>
-                        <li>2005</li>
-                        <li>2006</li>
-                        <li>2007</li>
-                        <li>2008</li>
-                        <li class="last">2009</li>
+                        <li ng-repeat="year in years">{{year}}</li>
                     </ul>
+
                     <!-- end .intervals -->
                 </div>
             </div>
@@ -166,5 +159,38 @@
 </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"/>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+<script src="/js/zeitapi.js"></script>
+
+<script type="text/javascript">
+    var start = 1950;
+    var end = 2020;
+    function TimelineController($scope, Author) {
+        $scope.authors = [];
+        $scope.years = [];
+
+        for(var i = start; i<=2020; i+=10) {
+            $scope.years.push(i);
+        }
+
+        Author.get({id: 'Helmut-Schmidt'}, function(author) {
+            $scope.authors.push(author);
+        });
+
+        Author.get({id: 'Giovanni-di-Lorenzo'}, function(author) {
+            $scope.authors.push(author);
+        });
+
+        Author.get({id: 'Iris-Mainka'}, function(author) {
+            $scope.authors.push(author);
+        });
+
+        $scope.$watch('authors', function() {
+            $scope.authors.forEach(function(author){
+                author.start = (author.startYear() - start) / (end - start) * 100;
+                author.width = author.spanYears() / (end - start) * 100;
+            });
+        }, true);
+    }
+</script>
 </html>
